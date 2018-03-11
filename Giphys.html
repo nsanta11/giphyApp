@@ -98,11 +98,33 @@
             else if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
              $("#displayThird").append(gifDiv);
             }
-      
         }
-    });
-};
 
+               $(".gif").on("click", function ()  {
+            // The attr jQuery method allows us to get or set the value of any attribute on our HTML element
+            var state = $(this).attr("data-state");
+                if (state === "still") {
+                console.log(state);
+                $(this).attr("src", $(this).attr("data-animate"));
+            
+                $(this).attr("data-state", "animate");
+                var animate = $(this).attr("data-animate");
+        
+                console.log(animate);
+
+                console.log(this);
+                console.log(state);
+                } 
+                
+                else {
+                $(this).attr("src", $(this).attr("data-still"));
+                $(this).attr("data-state", "still");
+                }
+        });
+    });
+
+};
+    
        function renderButtons() {
         // Deleting the giphys prior to adding new ones
         $("#buttons-view").empty();
@@ -131,6 +153,7 @@
             //input.value = "";
             // Calling renderButtons which processes the array
             renderButtons();
+
         });
 
 
@@ -142,7 +165,7 @@
 
     </script>
 
-      <style>
+    <style>
 
 
         #displayGifs {
@@ -150,22 +173,22 @@
         }
         
         #buttonOne{
-          margin-left:20px;
+            margin-left:20px;
         }
         
         .card {
-          display: none;
-          width: 90%;
-          margin: 0 auto; /* Added */
-          margin-bottom: 150px;
-          float: none; /* Added */
-          text-align: center;
-          overflow:auto;
-          
+            display: none;
+            width: 90%;
+            margin: 0 auto; /* Added */
+            margin-bottom: 150px;
+            float: none; /* Added */
+            text-align: center;
+            overflow:auto;
+            
         }
             
         .gif {
-          position: absolute;
+            position: absolute;
         }
         
         
@@ -176,12 +199,12 @@
         }
         
         button {
-          margin-left: 5px;
-          margin-top:20px;
+            margin-left: 5px;
+            margin-top:20px;
         }
-        
+            
                   
-      </style>
+    </style>
   </div>
 </body>
 

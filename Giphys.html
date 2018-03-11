@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Stop: It's Giphy time</title>
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+
+
+<div class="container">
+
+<div id="buttons-view"></div>
+<br>
+<form id="place-form">
+    <label for="place-input">Travel Destination:  </label>
+    <input type="text" id="place-input"><br>
+    <!-- Button triggers new place to be added -->
+    <input id="add-place" class="btn btn-secondary btn-sm" type="submit" value="Search">
+  </form>
+  <br>
+
+</div>
+
+<div class="card">
+<div class="card-body text-center">
+    <table id="myTable">
+        <tbody>
+          <tr>
+            <td id="displayGifs">
+          </tr>
+          <tr>
+            <td id="displaySecond"></td>
+          </tr>
+          <tr>
+            <td id="displayThird"></td>
+          </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript">
+
+  var countries = ["Costa Rica", "France", "New Zealand", "Italy", "China", "South Africa", "Egypt", "Thailand"];
+
+  
+
+
+  function renderButtons() {
+        // Deleting the giphys prior to adding new ones
+    $("#buttons-view").empty();
+        // Looping through the array of movies
+        for (var i = 0; i < countries.length; i++) {
+          // Then dynamicaly generating buttons for each movie in the array
+            var a = $("<button + type='button' + class='btn btn-primary btn-sm'>");
+            // Adding a data-attribute
+            a.addClass("place-btn", countries[i]);
+            a.attr("data-place", countries[i]);
+            // Providing the initial button text
+            a.text(countries[i]);
+            // Adding the button to the HTML
+            $("#buttons-view").append(a);
+        }
+      }
+
+    // This function handles events where one button is clicked
+    $("#add-place").on("click", function(event) {
+        // Preventing the buttons default behavior when clicked (which is submitting a form)
+        event.preventDefault();
+        // This line grabs the input from the textbox
+        var place = $("#place-input").val().trim();
+        // Adding the movie from the textbox to our array
+        countries.push(place);
+        //input.value = "";
+        // Calling renderButtons which processes the array
+        renderButtons();
+      
+
+    // Event listener for all button elements
+    $("button").on("click", function displayPlace() {
+        $("td").empty();
+        $(".card").show();
+
+      // In this case, the "this" keyword refers to the button that was clicked
+        var place = $(this).attr("data-place");
+        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+        place + "&api_key=lvgn7ul8Zf7ZT3h58B3HnSSzfe8nFtA5&limit=10";
+    
+    $.ajax({
+      url: queryURL,
+      method: 'GET'
+    }).then(function(response) {
+        console.log(response);
+          // Storing an array of results in the results variable
+        var results = response.data;
+          // Looping over every result item
+        for (var i = 0; i < 10; i++) {
+            
+              // Creating a div with the class "item"
+              var gifDiv = $("<td class='item'>");
+              // Storing the result item's rating
+              var rating = results[i].rating;
+              // Creating an image tag
+              var placeImage = $("<img + class='image'>");
+              // Creating a paragraph tag with the result item's rating
+              var p = $("<p class='rating'>").text("Rating: " + rating);
+              // Giving the image tag an src attribute of a proprty pulled off the
+              // result item
+              placeImage.attr("src", results[i].images.fixed_height_still.url);
+              placeImage.attr("data-still", results[i].images.fixed_height_still.url);
+              placeImage.attr("data-animate", results[i].images.fixed_height.url);
+              placeImage.attr("data-state", 'still');
+              placeImage.addClass("gif");
+              
+              // Appending the paragraph and personImage we created to the "gifDiv" div we created
+              gifDiv.append(placeImage);
+              gifDiv.append(p);
+             
+              // Appending the gifDiv to the "#display" div in the HTML
+            if (i<4 && results[i].rating !== "r" && results[i].rating !== "pg-13") {
+                $("#displayGifs").append(gifDiv);
+            }
+          
+            else if (i < 7 && results[i].rating !== "r" && results[i].rating !== "pg-13") {
+              $("#displaySecond").append(gifDiv);   
+            }
+    
+            else if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
+             $("#displayThird").append(gifDiv);
+            }
+      
+        }
+    });  
+}); 
+
+            $(".gif").on("click", function () {
+            // The attr jQuery method allows us to get or set the value of any attribute on our HTML element
+            var state = $(this).attr("data-state");
+            if (state === "still") {
+            console.log(state);
+            $(this).attr("src", $(this).attr("data-animate"));
+        
+            $(this).attr("data-state", "animate");
+            var animate = $(this).attr("data-animate");
+    
+            console.log(animate);
+
+            console.log(this);
+            console.log(state);
+            } 
+            
+            else {
+            $(this).attr("src", $(this).attr("data-still"));
+            $(this).attr("data-state", "still");
+
+            }
+        });
+ 
+  
+  });
+
+  renderButtons();
+
+  //$(document).on("click", ".button", displayPlace);
+  
+      
+  </script>
+  <style>
+
+
+#displayGifs {
+float:left;
+}
+
+#buttonOne{
+  margin-left:20px;
+}
+
+.card {
+  display: none;
+  width: 90%;
+  margin: 0 auto; /* Added */
+  margin-bottom: 150px;
+  float: none; /* Added */
+  text-align: center;
+  overflow:auto;
+  
+}
+    
+.gif {
+  position: absolute;
+}
+
+
+.image, .item, .rating {
+margin-left: 10px;
+position: relative;
+
+}
+
+button {
+  margin-left: 5px;
+  margin-top:20px;
+}
+
+      
+  </style>
+</body>
+</html>
